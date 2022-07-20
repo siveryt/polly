@@ -1,0 +1,6 @@
+{
+  "clientId": "419828969588916225", // Client ID of the bot
+  "token": "SUPERVERYVERYMEGASECRET" // Token of the bot
+}
+
+// NOTE: To user the config rename it in "config.json" and remove all the comments
