@@ -3,9 +3,11 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, Intents } = require('discord.js');
 const { token } = require('./config.json');
+const discordModals = require('discord-modals'); // Define the discord-modals package!
 
 // Create a new client instance
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
+discordModals(client); // Initialize the discord-modals package!
 
 // MARK: Commandhandler
 client.commands = new Collection();
@@ -31,7 +33,11 @@ client.on('interactionCreate', async(interaction) => {
     if (!command) return;
 
     try {
-        await command.execute(interaction);
+        if (command.client) {
+            await command.execute(interaction, client);
+        } else {
+            await command.execute(interaction);
+        }
     } catch (error) {
         console.error(error);
         await interaction.reply({
