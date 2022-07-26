@@ -22,6 +22,8 @@ module.exports = {
 
         const id = interaction.customId.slice(10);
 
+        console.log(id);
+
         // if ((await redis.get(`${id}-handled`)) !== null) return;
         // console.log(await redis.get(`${id}-handled`));
         // redis.set(`${id}-handled`, 'true');
@@ -46,21 +48,24 @@ module.exports = {
         }
 
         // Saving options to redis
-
+        const votes = [];
         const options = [];
         for (let i = 0; i < optionCount; i++) {
             options.push(interaction.fields.getTextInputValue(`option${i + 1}`));
+            votes.push(0);
         }
-
+        redis.set(`${id}-votes`, JSON.stringify(votes));
+        redis.expire(`${id}-votes`, time * 60);
         redis.set(`${id}-options`, JSON.stringify(options));
         redis.expire(`${id}-options`, time * 60);
 
         // Creating Reply
-        let reply = `**${question}**\n`;
+        let reply = `**${question}**\n\n`;
 
         for (let i = 0; i < options.length; i++) {
-            reply += `${options[i]}: |░░░░░░░░░░| 0%\n`;
+            reply += `${options[i]}: |▁▁▁▁▁▁▁▁▁▁| 0% (0 Votes)\n`;
         }
+        reply += `*Participants:* 0\n`;
 
         reply += `\nPoll will close **<t:${expire}:R>**`;
         reply += `\nClick on the corresponding button to vote!`;
