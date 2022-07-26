@@ -9,14 +9,12 @@ const {
     InteractionType,
 } = require('discord.js');
 const { token } = require('./config.json');
-const discordModals = require('discord-modals'); // Define the discord-modals package!
 
 // Create a new client instance
 const client = new Client({
     intents: [GatewayIntentBits.Guilds],
     partials: [Partials.Channel],
 });
-discordModals(client); // Initialize the discord-modals package!
 
 // MARK: Commandhandler
 client.commands = new Collection();
