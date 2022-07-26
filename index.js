@@ -1,12 +1,21 @@
 // Require the necessary discord.js classes
 const fs = require('node:fs');
 const path = require('node:path');
-const { Client, Collection, Intents } = require('discord.js');
+const {
+    Client,
+    GatewayIntentBits,
+    Partials,
+    Collection,
+    InteractionType,
+} = require('discord.js');
 const { token } = require('./config.json');
 const discordModals = require('discord-modals'); // Define the discord-modals package!
 
 // Create a new client instance
-const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
+const client = new Client({
+    intents: [GatewayIntentBits.Guilds],
+    partials: [Partials.Channel],
+});
 discordModals(client); // Initialize the discord-modals package!
 
 // MARK: Commandhandler
@@ -26,7 +35,7 @@ for (const file of commandFiles) {
 
 // Add actions to the commands
 client.on('interactionCreate', async(interaction) => {
-    if (!interaction.isCommand()) return;
+    if (interaction.type !== InteractionType.ApplicationCommand) return;
 
     const command = client.commands.get(interaction.commandName);
 

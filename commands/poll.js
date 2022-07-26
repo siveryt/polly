@@ -1,6 +1,8 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
+const { SlashCommandBuilder } = require('discord.js');
+
 const { Modal, TextInputComponent, showModal } = require('discord-modals'); // Import all
 const discordModals = require('discord-modals'); // Define the discord-modals package!
+
 const { createClient } = require('redis');
 const { randomUUID } = require('crypto');
 

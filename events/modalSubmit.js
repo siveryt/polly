@@ -1,4 +1,7 @@
-const { UnsafeTextInputBuilder } = require('@discordjs/builders');
+// NOTE: Probably doesn't work on DJS 14; will be fixed soon
+
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+
 const { createClient } = require('redis');
 
 module.exports = {
@@ -53,8 +56,6 @@ module.exports = {
 
         reply += `\nPoll will close **<t:${expire}:R>**`;
         reply += `\nClick on the corresponding button to vote!`;
-
-        await interaction.reply(reply);
 
         // redis.set(`${id}-options`, JSON.stringify(options));
     },
