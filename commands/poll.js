@@ -41,6 +41,8 @@ module.exports = {
             .setDescription('Should multiple answers be allowed?')
         ),
     async execute(interaction, client) {
+        if (!interaction.inGuild())
+            return interaction.reply('This command can only be used in a server.');
         // discordModals(client);
         // REDIS is using default port 6379 and hostname localhost with default options. Just to keep it simple
         const redis = createClient();
