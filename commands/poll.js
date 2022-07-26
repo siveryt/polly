@@ -1,6 +1,8 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { Modal, TextInputComponent, showModal } = require('discord-modals'); // Import all
 const discordModals = require('discord-modals'); // Define the discord-modals package!
+const { createClient } = require('redis');
+const { randomUUID } = require('crypto');
 
 module.exports = {
     client: true,
@@ -22,18 +24,38 @@ module.exports = {
             .setRequired(true)
         )
         .addNumberOption((option) =>
-            option.setName('time').setDescription('How long should the poll last?')
+            option
+            .setName('time')
+            .setDescription('How long should the poll last in minutes?')
+            .setMaxValue(10080)
+            .setMinValue(1)
         ),
     async execute(interaction, client) {
         discordModals(client);
+        // REDIS is using default port 6379 and hostname localhost with default options. Just to keep it simple
+        const redis = createClient();
+        redis.on('error', (err) => console.log('Redis Client Error', err));
+        await redis.connect();
 
-        const modal = new Modal() // We create a Modal
-            .setCustomId('modal-customid')
-            .setTitle('Modal');
+        const id = randomUUID();
+        console.log(id);
 
         const options = interaction.options.getNumber('options');
+        const question = interaction.options.getString('question');
+        const time =
+            interaction.options.getNumber('time') === null ?
+            60 :
+            interaction.options.getNumber('time');
 
-        for (let i = 1; i >= options; i++) {
+        await redis.set(`${id}-options`, options);
+        await redis.set(`${id}-question`, question);
+        await redis.set(`${id}-expire`, time);
+
+        const modal = new Modal() // We create a Modal
+            .setCustomId(`pollmodal-${id}`) // We set the custom id
+            .setTitle('Options');
+
+        for (let i = 1; i < options + 1; i++) {
             modal.addComponents(
                 new TextInputComponent() // We create a Text Input Component
                 .setCustomId('option' + i)
