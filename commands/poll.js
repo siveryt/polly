@@ -1,7 +1,10 @@
-const { SlashCommandBuilder } = require('discord.js');
-
-const { Modal, TextInputComponent, showModal } = require('discord-modals'); // Import all
-const discordModals = require('discord-modals'); // Define the discord-modals package!
+const {
+    SlashCommandBuilder,
+    ActionRowBuilder,
+    ModalBuilder,
+    TextInputBuilder,
+    TextInputStyle,
+} = require('discord.js');
 
 const { createClient } = require('redis');
 const { randomUUID } = require('crypto');
@@ -33,7 +36,7 @@ module.exports = {
             .setMinValue(1)
         ),
     async execute(interaction, client) {
-        discordModals(client);
+        // discordModals(client);
         // REDIS is using default port 6379 and hostname localhost with default options. Just to keep it simple
         const redis = createClient();
         redis.on('error', (err) => console.log('Redis Client Error', err));
@@ -53,22 +56,23 @@ module.exports = {
         await redis.set(`${id}-question`, question);
         await redis.set(`${id}-expire`, time);
 
-        const modal = new Modal() // We create a Modal
+        const modal = new ModalBuilder() // We create a Modal
             .setCustomId(`pollmodal-${id}`) // We set the custom id
             .setTitle('Options');
 
         for (let i = 1; i < options + 1; i++) {
-            modal.addComponents(
-                new TextInputComponent() // We create a Text Input Component
+            const component = new TextInputBuilder()
                 .setCustomId('option' + i)
                 .setLabel('Option ' + i)
-                .setStyle('SHORT') // IMPORTANT: Text Input Component Style can be 'SHORT' or 'LONG'
+                .setStyle(TextInputStyle.Short) // IMPORTANT: Text Input Component Style can be 'SHORT' or 'LONG'
                 .setPlaceholder('Option ' + i)
-                .setRequired(true) // If it's required or not
-            );
+                .setRequired(true); // If it's required or not
+
+            const actionRow = new ActionRowBuilder().addComponents(component);
+            modal.addComponents(actionRow);
         }
 
-        showModal(modal, {
+        await interaction.showModal(modal, {
             client: client, // Client to show the Modal through the Discord API.
             interaction: interaction, // Show the modal with interaction data.
         });
