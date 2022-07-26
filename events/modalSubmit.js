@@ -22,20 +22,37 @@ module.exports = {
         const question = await redis.get(`${id}-question`);
         const optionCount = await redis.get(`${id}-options`);
         const expire = time * 60 + Math.floor(new Date().getTime() / 1000);
-        redis.set(`${id}-expire`, expire);
+        await redis.del(`${id}-expire`);
+        redis.expire(`${id}-question`, time * 60);
 
-        console.log(interaction);
+        for (let i = 0; i < optionCount; i++) {
+            if (interaction.fields.getTextInputValue(`option${i + 1}`).length > 80) {
+                redis.del(`${id}-question`);
+                redis.del(`${id}-options`);
+
+                interaction.reply(
+                    `Option ${i + 1} too long! Maximal **80** characters.`
+                );
+                return;
+            }
+        }
 
         const options = [];
         for (let i = 0; i < optionCount; i++) {
             options.push(interaction.fields.getTextInputValue(`option${i + 1}`));
         }
 
+        redis.set(`${id}-options`, JSON.stringify(options));
+        redis.expire(`${id}-options`, time * 60);
+
         let reply = `**${question}**\n`;
 
         for (let i = 0; i < options.length; i++) {
-            reply += `**${i + 1}.** ${options[i]}: |░░░░░░░░░░| 0%\n`;
+            reply += `${options[i]}: |░░░░░░░░░░| 0%\n`;
         }
+
+        reply += `\nPoll will close **<t:${expire}:R>**`;
+        reply += `\nClick on the corresponding button to vote!`;
 
         await interaction.reply(reply);
 
