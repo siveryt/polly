@@ -53,8 +53,11 @@ module.exports = {
             interaction.options.getNumber('time');
 
         await redis.set(`${id}-options`, options);
+        redis.expire(`${id}-options`, 5 * 60);
         await redis.set(`${id}-question`, question);
+        redis.expire(`${id}-question`, 5 * 60);
         await redis.set(`${id}-expire`, time);
+        redis.expire(`${id}-expire`, 5 * 60);
 
         const modal = new ModalBuilder() // We create a Modal
             .setCustomId(`pollmodal-${id}`) // We set the custom id

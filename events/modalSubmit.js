@@ -1,6 +1,11 @@
 // NOTE: Probably doesn't work on DJS 14; will be fixed soon
 
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const {
+    InteractionType,
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+} = require('discord.js');
 
 const { createClient } = require('redis');
 
@@ -8,7 +13,7 @@ module.exports = {
     name: 'interactionCreate',
     async execute(interaction) {
         console.log('executed');
-        if (interaction.type !== 'MODAL_SUBMIT') return;
+        if (interaction.type !== InteractionType.ModalSubmit) return;
         if (!interaction.customId.startsWith('pollmodal-')) return;
 
         const redis = createClient();
@@ -40,6 +45,8 @@ module.exports = {
             }
         }
 
+        // Saving options to redis
+
         const options = [];
         for (let i = 0; i < optionCount; i++) {
             options.push(interaction.fields.getTextInputValue(`option${i + 1}`));
@@ -48,6 +55,7 @@ module.exports = {
         redis.set(`${id}-options`, JSON.stringify(options));
         redis.expire(`${id}-options`, time * 60);
 
+        // Creating Reply
         let reply = `**${question}**\n`;
 
         for (let i = 0; i < options.length; i++) {
@@ -57,6 +65,20 @@ module.exports = {
         reply += `\nPoll will close **<t:${expire}:R>**`;
         reply += `\nClick on the corresponding button to vote!`;
 
-        // redis.set(`${id}-options`, JSON.stringify(options));
+        // Creating Buttons
+        const row = new ActionRowBuilder();
+
+        console.log(await redis.get(`${id}-options`));
+
+        for (let i = 0; i < optionCount; i++) {
+            row.addComponents(
+                new ButtonBuilder()
+                .setCustomId(`${id}-option${i + 1}`)
+                .setLabel(interaction.fields.getTextInputValue(`option${i + 1}`))
+                .setStyle(ButtonStyle.Primary)
+            );
+        }
+
+        await interaction.reply({ content: reply, components: [row] });
     },
 };
