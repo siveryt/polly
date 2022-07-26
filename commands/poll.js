@@ -34,6 +34,11 @@ module.exports = {
             .setDescription('How long should the poll last in minutes?')
             .setMaxValue(10080)
             .setMinValue(1)
+        )
+        .addBooleanOption((option) =>
+            option
+            .setName('multipleanswers')
+            .setDescription('Should multiple answers be allowed?')
         ),
     async execute(interaction, client) {
         // discordModals(client);
@@ -51,13 +56,19 @@ module.exports = {
             interaction.options.getNumber('time') === null ?
             60 :
             interaction.options.getNumber('time');
+        const multipleAnswers =
+            interaction.options.getBoolean('multipleanswers') === null ?
+            false :
+            interaction.options.getBoolean('multipleanswers');
 
         await redis.set(`${id}-options`, options);
-        redis.expire(`${id}-options`, 5 * 60);
+        redis.expire(`${id}-options`, time * 60);
         await redis.set(`${id}-question`, question);
-        redis.expire(`${id}-question`, 5 * 60);
+        redis.expire(`${id}-question`, time * 60);
         await redis.set(`${id}-expire`, time);
-        redis.expire(`${id}-expire`, 5 * 60);
+        redis.expire(`${id}-expire`, time * 60);
+        await redis.set(`${id}-multipleAnswers`, multipleAnswers.toString());
+        redis.expire(`${id}-multipleAnswers`, time * 60);
 
         const modal = new ModalBuilder() // We create a Modal
             .setCustomId(`pollmodal-${id}`) // We set the custom id

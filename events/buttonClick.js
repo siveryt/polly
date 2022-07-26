@@ -27,16 +27,39 @@ module.exports = {
             return;
         }
 
+        const multipleAnswers =
+            (await redis.get(`${id}-multipleAnswers`)) == 'true';
+
+        const participantsRedis = JSON.parse(await redis.get(`${id}-participants`));
+
+        if (multipleAnswers) {
+            if (participantsRedis[voted - 1].includes(interaction.member.id)) {
+                interaction.member.send(`You have already voted for this poll!`);
+                interaction.update(interaction.message.content);
+                return;
+            }
+
+            console.log('multiple answers');
+            participantsRedis[voted - 1].push(interaction.member.id);
+        } else {
+            if (participantsRedis.includes(interaction.member.id)) {
+                interaction.member.send(`You have already voted for this poll!`);
+                interaction.update(interaction.message.content);
+                return;
+            }
+            participantsRedis.push(interaction.member.id);
+        }
+
         const votes = JSON.parse(await redis.get(`${id}-votes`));
         const question = await redis.get(`${id}-question`);
         const options = JSON.parse(await redis.get(`${id}-options`));
-
-        console.log(votes);
         votes[voted - 1] = votes[voted - 1] + 1;
-        console.log(votes);
         const exp = await redis.ttl(`${id}-votes`);
         await redis.set(`${id}-votes`, JSON.stringify(votes));
         await redis.expire(`${id}-votes`, exp);
+
+        await redis.set(`${id}-participants`, JSON.stringify(participantsRedis));
+        await redis.expire(`${id}-participants`, exp);
 
         let participants = 0;
 
@@ -66,8 +89,6 @@ module.exports = {
         const expire = Math.floor(new Date().getTime() / 1000) + exp;
         reply += `\nPoll will close **<t:${expire}:R>**`;
         reply += `\nClick on the corresponding button to vote!`;
-
-        console.log(reply);
 
         interaction.update({
             content: `${reply}`,

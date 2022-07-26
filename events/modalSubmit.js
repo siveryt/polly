@@ -58,6 +58,14 @@ module.exports = {
         redis.expire(`${id}-votes`, time * 60);
         redis.set(`${id}-options`, JSON.stringify(options));
         redis.expire(`${id}-options`, time * 60);
+        const participants = [];
+        if ((await redis.get(`${id}-multipleAnswers`)) == 'true') {
+            for (let i = 0; i < optionCount; i++) {
+                participants.push([]);
+            }
+        }
+        redis.set(`${id}-participants`, JSON.stringify(participants));
+        redis.expire(`${id}-participants`, time * 60);
 
         // Creating Reply
         let reply = `**${question}**\n\n`;
