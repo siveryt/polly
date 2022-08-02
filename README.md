@@ -57,6 +57,16 @@ In order to enable the command polly provides, you have to run `deploy-commands.
 
 To run the bot, just type `node .` into your terminal. The bot is going to boot up within a fed seconds. If you close your terminal, the bot is also stopped.
 
+## Create Service on Linux
+
+If you want the bot to automatically start, when your machine boots up, you can create a service-file for systemd. An example is given in `polly.service`. Please don't forget to replace the placeholders with real values!
+
+| Placeholder | Description                                        |
+|-------------|----------------------------------------------------|
+| PATHTOPOLLY | Path where you have downloaded and installed polly |
+| USER        | User who executes the service                      |
+| GROUP       | Group from user which executes the service         |
+
 ### Invite to server
 
 You'll have to create a cutom link in order to invite the bot hostet by yourself. Just replace _CLIENTIDHERE_ with your client id and paste it into your browser.

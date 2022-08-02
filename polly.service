@@ -1,0 +1,15 @@
+[Unit]
+Description=polly
+After=network.target
+
+[Service]
+ExecStart=PATHTOPOLLY/index.js
+Restart=always
+User=USER
+Group=GROUP
+Environment=PATH=/usr/bin:/usr/local/bin
+Environment=NODE_ENV=production
+WorkingDirectory=PATHTOPOLLY
+
+[Install]
+WantedBy=multi-user.target

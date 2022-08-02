@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 // Require the necessary discord.js classes
 const fs = require('node:fs');
 const path = require('node:path');
@@ -32,7 +34,7 @@ for (const file of commandFiles) {
 }
 
 // Add actions to the commands
-client.on('interactionCreate', async(interaction) => {
+client.on('interactionCreate', async (interaction) => {
     if (interaction.type !== InteractionType.ApplicationCommand) return;
 
     const command = client.commands.get(interaction.commandName);
