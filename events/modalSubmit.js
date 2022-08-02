@@ -33,6 +33,8 @@ module.exports = {
             return;
         }
 
+        // TODO: %() regexen
+
         // Get argurments from REDIS
         const time = await redis.get(`${id}-expire`);
         const question = await redis.get(`${id}-question`);
@@ -106,9 +108,9 @@ module.exports = {
         for (let i = 0; i < optionCount; i++) {
             row.addComponents(
                 new ButtonBuilder()
-                .setCustomId(`pollmodal-${id}-option${i + 1}`) // set it to pollmodal-ID-option1, pollmodal-ID-option2, pollmodal-ID-option3 etc.
-                .setLabel(interaction.fields.getTextInputValue(`option${i + 1}`)) // set label to option
-                .setStyle(ButtonStyle.Primary)
+                    .setCustomId(`pollmodal-${id}-option${i + 1}`) // set it to pollmodal-ID-option1, pollmodal-ID-option2, pollmodal-ID-option3 etc.
+                    .setLabel(interaction.fields.getTextInputValue(`option${i + 1}`)) // set label to option
+                    .setStyle(ButtonStyle.Primary)
             );
         }
 

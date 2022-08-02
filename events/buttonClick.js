@@ -17,7 +17,7 @@ module.exports = {
         const id = interaction.customId.slice(10, 46);
         // Get what button was pressed
         const voted = interaction.customId.slice(53);
-        debugger;
+
 
         // Check if poll already expired
         if ((await redis.get(`${id}-votes`)) == null) {
@@ -26,13 +26,33 @@ module.exports = {
             // Split them up and remove last 2 lines
             let lines = content.split('\n');
             content = '';
+            let votes = [];
+            let options = [];
             for (let i = 0; i < lines.length - 2; i++) {
                 content += lines[i] + '\n';
+                if (i >= 2 && i < lines.length - 4) {
+                    votes.push(lines[i].substring(lines[i].indexOf('% (') + 3, lines[i].length - 7));
+                    options.push(lines[i].substring(0, lines[i].indexOf(': |█')));
+                }
             }
+
+            // Calculate poll winner
+            winner = 0;
+            votes.forEach((element, index) => {
+                if (votes[winner] < element) {
+                    winner = index;
+                }
+            });
+
+            winner = options[winner];
+
+            // Add poll winner
+            content += `\nWinner: **${winner}**\n\n`;
+
+
             // Append "Voting has ended" to message
-            content += `*This poll has ended <t:${Math.floor(
-        new Date().getTime() / 1000
-      )}:f>*`;
+            content += `*This poll has ended ${lines[lines.length - 2].substring(18).replace(/:R>\*\*/gm, ":f>")}*\n`;
+            content += "Thanks for participating!"
             // Set content of message
             interaction.update({ content: content, components: [] });
             // return function
