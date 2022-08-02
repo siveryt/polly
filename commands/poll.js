@@ -16,29 +16,29 @@ module.exports = {
         .setDescription('Creates a poll')
         .addNumberOption((option) =>
             option
-            .setName('options')
-            .setDescription('How many options should the poll have?')
-            .setRequired(true)
-            .setMaxValue(5)
-            .setMinValue(2)
+                .setName('options')
+                .setDescription('How many options should the poll have?')
+                .setRequired(true)
+                .setMaxValue(5)
+                .setMinValue(2)
         )
         .addStringOption((option) =>
             option
-            .setName('question')
-            .setDescription("What's the question?")
-            .setRequired(true)
+                .setName('question')
+                .setDescription("What's the question?")
+                .setRequired(true)
         )
         .addNumberOption((option) =>
             option
-            .setName('time')
-            .setDescription('How long should the poll last in minutes?')
-            .setMaxValue(10080)
-            .setMinValue(1)
+                .setName('time')
+                .setDescription('How long should the poll last in minutes?')
+                .setMaxValue(10080)
+                .setMinValue(1)
         )
         .addBooleanOption((option) =>
             option
-            .setName('multipleanswers')
-            .setDescription('Should multiple answers be allowed?')
+                .setName('multipleanswers')
+                .setDescription('Should multiple answers be allowed?')
         ),
     async execute(interaction, client) {
         // Check if command was send in guild
@@ -56,15 +56,15 @@ module.exports = {
 
         // Get argurments from command
         const options = interaction.options.getNumber('options');
-        const question = interaction.options.getString('question');
+        const question = interaction.options.getString('question').replace(/[\(\)%]/gm, "");
         const time =
             interaction.options.getNumber('time') === null ?
-            60 :
-            interaction.options.getNumber('time');
+                60 :
+                interaction.options.getNumber('time');
         const multipleAnswers =
             interaction.options.getBoolean('multipleanswers') === null ?
-            false :
-            interaction.options.getBoolean('multipleanswers');
+                false :
+                interaction.options.getBoolean('multipleanswers');
 
         // Save arguments to redis
         await redis.set(`${id}-options`, options);

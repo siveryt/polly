@@ -66,7 +66,7 @@ module.exports = {
         const options = [];
         // Fill arrays with options and votes
         for (let i = 0; i < optionCount; i++) {
-            options.push(interaction.fields.getTextInputValue(`option${i + 1}`));
+            options.push(interaction.fields.getTextInputValue(`option${i + 1}`).replace(/[\(\)%]/gm, ""));
             votes.push(0);
         }
         // Save everything to redis and expire
@@ -109,7 +109,7 @@ module.exports = {
             row.addComponents(
                 new ButtonBuilder()
                     .setCustomId(`pollmodal-${id}-option${i + 1}`) // set it to pollmodal-ID-option1, pollmodal-ID-option2, pollmodal-ID-option3 etc.
-                    .setLabel(interaction.fields.getTextInputValue(`option${i + 1}`)) // set label to option
+                    .setLabel(interaction.fields.getTextInputValue(`option${i + 1}`).replace(/[\(\)%]/gm, "")) // set label to option
                     .setStyle(ButtonStyle.Primary)
             );
         }
