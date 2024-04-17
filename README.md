@@ -1,5 +1,10 @@
 # siveryt/polly 📊
 
+> [!WARNING]  
+> Polly has been DISCONTINUED due to Discord's new poll feature. You can still run the bot by yourself. If you want to do so, clone the repo and follow the instructions down below.
+> Unfortunately, polly uses redis as storage which as the time of developing polly wasn't that big of a controversy. Now it is. I'm not going to change the storage system to something else. If you want to run the bot, you have to install redis. :)
+> glhf :)
+
 > Polly is a Discord-Bot designed for a better experience with Polls
 
 ## Features
